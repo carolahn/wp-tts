@@ -15,28 +15,102 @@ btn.addEventListener("click", () => {
   let content = post_object.content;
   console.log(content);
   let toSpeak = new SpeechSynthesisUtterance(content);
-  //   let toSpeak = new SpeechSynthesisUtterance(content);
-  //   let selectedVoiceName = voiceList.selectedOptions[0].getAttribute(
-  //     "data-name"
-  //   );
-  //   voices.forEach((voice) => {
-  //     if (voice.name === selectedVoiceName) {
-  //       toSpeak.voice = voice;
-  //     }
-  //   });
-  toSpeak.voice = voices[14];
-  toSpeak.lang = "pt-BR";
-  synth.speak(toSpeak);
+  //   toSpeak.voice = voices[2];
+  //   toSpeak.lang = "pt-BR";
+  //   synth.speak(toSpeak);
+  //   console.log(voices);
+  speechUtteranceChunker(toSpeak);
 });
 
 function populateVoices() {
   voices = synth.getVoices();
-  //   voiceList.innerHTML = "";
-  //   voices.forEach((voice) => {
-  //     let listItem = document.createElement("option");
-  //     listItem.textContent = voice.name;
-  //     listItem.setAttribute("data-lang", voice.lang);
-  //     listItem.setAttribute("data-name", voice.name);
-  //     voiceList.appendChild(listItem);
-  //   });
 }
+
+var speechUtteranceChunker = function (utt, settings, callback) {
+  settings = settings || {};
+  var newUtt;
+  var txt =
+    settings && settings.offset !== undefined
+      ? utt.text.substring(settings.offset)
+      : utt.text;
+  if (utt.voice && utt.voice.voiceURI === "native") {
+    // Not part of the spec
+    newUtt = utt;
+    newUtt.text = txt;
+    newUtt.addEventListener("end", function () {
+      if (speechUtteranceChunker.cancel) {
+        speechUtteranceChunker.cancel = false;
+      }
+      if (callback !== undefined) {
+        callback();
+      }
+    });
+  } else {
+    var chunkLength = (settings && settings.chunkLength) || 160;
+    var pattRegex = new RegExp(
+      "^[\\s\\S]{" +
+        Math.floor(chunkLength / 2) +
+        "," +
+        chunkLength +
+        "}[.!?,]{1}|^[\\s\\S]{1," +
+        chunkLength +
+        "}$|^[\\s\\S]{1," +
+        chunkLength +
+        "} "
+    );
+    var chunkArr = txt.match(pattRegex);
+
+    if (chunkArr[0] === undefined || chunkArr[0].length <= 2) {
+      //call once all text has been spoken...
+      if (callback !== undefined) {
+        callback();
+      }
+      return;
+    }
+    var chunk = chunkArr[0];
+    newUtt = new SpeechSynthesisUtterance(chunk);
+    var x;
+    for (x in utt) {
+      if (utt.hasOwnProperty(x) && x !== "text") {
+        newUtt[x] = utt[x];
+      }
+    }
+    newUtt.addEventListener("end", function () {
+      if (speechUtteranceChunker.cancel) {
+        speechUtteranceChunker.cancel = false;
+        return;
+      }
+      settings.offset = settings.offset || 0;
+      settings.offset += chunk.length - 1;
+      speechUtteranceChunker(utt, settings, callback);
+    });
+  }
+
+  if (settings.modifier) {
+    settings.modifier(newUtt);
+  }
+  console.log(newUtt); //IMPORTANT!! Do not remove: Logging the object out fixes some onend firing issues.
+  //placing the speak invocation inside a callback fixes ordering and onend issues.
+  setTimeout(function () {
+    newUtt.voice = voices[14];
+    speechSynthesis.speak(newUtt);
+  }, 0);
+};
+
+// attempt to fix delay between utterances
+
+//  var myTimeout;
+//     function myTimer() {
+//         window.speechSynthesis.pause();
+//         window.speechSynthesis.resume();
+//         myTimeout = setTimeout(myTimer, 10000);
+//     }
+//     ...
+//         window.speechSynthesis.cancel();
+//         myTimeout = setTimeout(myTimer, 10000);
+//         var toSpeak = "some text";
+//         var utt = new SpeechSynthesisUtterance(toSpeak);
+//         ...
+//         utt.onend =  function() { clearTimeout(myTimeout); }
+//         window.speechSynthesis.speak(utt);
+//     ...
