@@ -10,6 +10,9 @@ function wordpress_tts_add_scripts()
     // scripts js
     wp_enqueue_script('wordpress-tts-app', plugins_url() . '/wordpress-tts/js/wordpress-tts-app.js', null, null, true);
 
+    // scripts styles
+    wp_enqueue_style('wordpress-tts-style', plugins_url() . '/wordpress-tts/css/wordpress-tts-style.css');
+
     // add custom js variables
     wp_localize_script('wordpress-tts-app', 'post_object', array(
         'content' => $content

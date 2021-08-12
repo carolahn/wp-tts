@@ -1,7 +1,7 @@
 <?php
 
-add_shortcode('wordpress_tts', 'wordpressTtsAddSpeaker');
-function wordpressTtsAddSpeaker() 
+add_shortcode('wordpress_tts', 'wordpress_tts_add_speaker');
+function wordpress_tts_add_speaker() 
 {
     // $endereco = get_option('al_local_dia_palestra_endereco');
     // $cidade = get_option('al_local_dia_palestra_cidade');
