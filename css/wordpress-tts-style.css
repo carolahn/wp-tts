@@ -1,18 +1,30 @@
 /* from responsivecoive */
 
-.rvbutton {
-  background-color: #c2c2c2;
-  border: 1px solid #ffffff;
-  display: inline-block;
-  color: #303030;
-  font-size: 100%;
-  font-family: inherit;
+.tts-wrapper {
+  float: right;
+  margin-bottom: 1rem;
+}
+
+.tts-button {
+  background-image: linear-gradient(#ffffff, #eeeeee 50%, #e4e4e4);
+  cursor: pointer;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  line-height: 1.5;
+  border-radius: 0rem;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
   text-decoration: none;
 }
-.rvbutton:hover {
+
+.tts-button:hover {
   background-color: #c2c2c2;
 }
-.rvbutton:active {
+
+.tts-button:active {
   position: relative;
   top: 1px;
 }

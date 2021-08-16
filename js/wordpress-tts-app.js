@@ -1,4 +1,4 @@
-const btn = document.getElementById("btn-speak");
+const btn = document.getElementById("tts-button");
 // const txtin = document.getElementById("text-input");
 // const voiceList = document.getElementById("voiceList");
 const synth = window.speechSynthesis;

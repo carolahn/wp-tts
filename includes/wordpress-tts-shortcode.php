@@ -5,13 +5,14 @@ function wordpress_tts_add_speaker()
 {
     // $endereco = get_option('al_local_dia_palestra_endereco');
     // $cidade = get_option('al_local_dia_palestra_cidade');
-
-    return '
-        <div class="wordpress-tts-wrapper">
-            <center>
-                <button id="btn-speak" class="btn btn-success mt-4">Speak</button>
-            </center>
-      
+    
+    $tts_icon = "&#128266;";
+    $tts_text = "Ouvir o texto";
+    $tts_button = '
+        <div class="tts-wrapper">
+            <button id="tts-button" class="tts-button">' . $tts_icon . ' ' . $tts_text . '</button>
         </div>
     ';
+
+    return $tts_button;
 }
