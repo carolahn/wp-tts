@@ -1,8 +1,8 @@
 const btn = document.getElementById("tts-button");
-// const txtin = document.getElementById("text-input");
-// const voiceList = document.getElementById("voiceList");
 const synth = window.speechSynthesis;
 let voices = [];
+let isPlaying = false;
+let mustStop = false;
 
 populateVoices();
 
@@ -11,15 +11,24 @@ if (speechSynthesis !== undefined) {
 }
 
 btn.addEventListener("click", () => {
-  console.log("clicou");
   let content = post_object.content;
-  console.log(content);
   let toSpeak = new SpeechSynthesisUtterance(content);
-  //   toSpeak.voice = voices[2];
-  //   toSpeak.lang = "pt-BR";
-  //   synth.speak(toSpeak);
-  //   console.log(voices);
-  speechUtteranceChunker(toSpeak);
+
+  toSpeak.addEventListener("pause", function (event) {
+    console.log("Speech paused after " + event.elapsedTime + " seconds.");
+  });
+
+  toSpeak.addEventListener("cancel", function (event) {
+    console.log("CANCEL");
+  });
+
+  if (!speechSynthesis.speaking) {
+    speechUtteranceChunker(toSpeak);
+  } else {
+    console.log("deveria ter cancelado");
+    speechUtteranceChunker.cancel = true;
+    speechSynthesis.cancel();
+  }
 });
 
 function populateVoices() {
@@ -33,6 +42,7 @@ var speechUtteranceChunker = function (utt, settings, callback) {
     settings && settings.offset !== undefined
       ? utt.text.substring(settings.offset)
       : utt.text;
+
   if (utt.voice && utt.voice.voiceURI === "native") {
     // Not part of the spec
     newUtt = utt;
