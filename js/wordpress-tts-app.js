@@ -1,8 +1,7 @@
 const btn = document.getElementById("tts-button");
+const wrapper = btn.parentElement;
 const synth = window.speechSynthesis;
 let voices = [];
-let isPlaying = false;
-let mustStop = false;
 
 populateVoices();
 
@@ -14,18 +13,16 @@ btn.addEventListener("click", () => {
   let content = post_object.content;
   let toSpeak = new SpeechSynthesisUtterance(content);
 
-  toSpeak.addEventListener("pause", function (event) {
-    console.log("Speech paused after " + event.elapsedTime + " seconds.");
-  });
-
-  toSpeak.addEventListener("cancel", function (event) {
-    console.log("CANCEL");
-  });
+  toSpeak.addEventListener("cancel", () => {});
 
   if (!speechSynthesis.speaking) {
     speechUtteranceChunker(toSpeak);
+    btn.className = "tts-button tts-button__on-speak";
+    wrapper.className = "tts-wrapper tts-wrapper__on-speak";
   } else {
     console.log("deveria ter cancelado");
+    btn.className = "tts-button";
+    wrapper.className = "tts-wrapper";
     speechUtteranceChunker.cancel = true;
     speechSynthesis.cancel();
   }

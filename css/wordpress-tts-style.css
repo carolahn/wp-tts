@@ -1,17 +1,21 @@
-/* from responsivecoive */
-
 .tts-wrapper {
   float: right;
   margin-bottom: 1rem;
+  box-sizing: border-box;
+  vertical-align: middle;
+  padding: 1.7px !important;
+}
+
+.tts-wrapper__on-speak {
+  outline: 5px auto #cfdae5 !important;
 }
 
 .tts-button {
   background-image: linear-gradient(#ffffff, #eeeeee 50%, #e4e4e4);
   cursor: pointer;
-  border: none;
   padding: 0.25rem 0.5rem;
   line-height: 1.5;
-  border-radius: 0rem;
+  outline: none !important;
   font-weight: 400;
   text-align: center;
   white-space: nowrap;
@@ -20,11 +24,7 @@
   text-decoration: none;
 }
 
-.tts-button:hover {
-  background-color: #c2c2c2;
-}
-
-.tts-button:active {
-  position: relative;
-  top: 1px;
+.tts-button__on-speak {
+  outline: 5px auto #101010 !important;
+  border: 1px solid transparent !important;
 }
