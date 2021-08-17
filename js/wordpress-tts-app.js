@@ -3,6 +3,16 @@ const wrapper = btn.parentElement;
 const synth = window.speechSynthesis;
 let voices = [];
 
+//
+
+var myTimeout;
+function myTimer() {
+  window.speechSynthesis.pause();
+  window.speechSynthesis.resume();
+  myTimeout = setTimeout(myTimer, 10000);
+}
+//
+
 populateVoices();
 
 if (speechSynthesis !== undefined) {
@@ -16,7 +26,19 @@ btn.addEventListener("click", () => {
   toSpeak.addEventListener("cancel", () => {});
 
   if (!speechSynthesis.speaking) {
-    speechUtteranceChunker(toSpeak);
+    speechUtteranceChunker(
+      toSpeak,
+      {
+        chunkLength: 160,
+      },
+      function () {
+        // callback to execute when finishes speaking
+        btn.className = "tts-button";
+        wrapper.className = "tts-wrapper";
+        console.log("done");
+      }
+    );
+
     btn.className = "tts-button tts-button__on-speak";
     wrapper.className = "tts-wrapper tts-wrapper__on-speak";
   } else {
@@ -67,12 +89,10 @@ var speechUtteranceChunker = function (utt, settings, callback) {
     var chunkArr = txt.match(pattRegex);
 
     if (chunkArr[0] === undefined || chunkArr[0].length <= 2) {
-      //call once all text has been spoken...
+      // called if all text has been spoken...
       if (callback !== undefined) {
         callback();
       }
-      btn.className = "tts-button";
-      wrapper.className = "tts-wrapper";
       return;
     }
     var chunk = chunkArr[0];
@@ -97,28 +117,15 @@ var speechUtteranceChunker = function (utt, settings, callback) {
   if (settings.modifier) {
     settings.modifier(newUtt);
   }
-  console.log(newUtt); //IMPORTANT!! Do not remove: Logging the object out fixes some onend firing issues.
+  // console.log(newUtt); //IMPORTANT!! Do not remove: Logging the object out fixes some onend firing issues.
   //placing the speak invocation inside a callback fixes ordering and onend issues.
   setTimeout(function () {
     newUtt.voice = voices[14];
+
+    myTimeout = setTimeout(myTimer, 10000);
+    newUtt.onend = function () {
+      clearTimeout(myTimeout);
+    };
     speechSynthesis.speak(newUtt);
   }, 0);
 };
-
-// attempt to fix delay between utterances
-
-//  var myTimeout;
-//     function myTimer() {
-//         window.speechSynthesis.pause();
-//         window.speechSynthesis.resume();
-//         myTimeout = setTimeout(myTimer, 10000);
-//     }
-//     ...
-//         window.speechSynthesis.cancel();
-//         myTimeout = setTimeout(myTimer, 10000);
-//         var toSpeak = "some text";
-//         var utt = new SpeechSynthesisUtterance(toSpeak);
-//         ...
-//         utt.onend =  function() { clearTimeout(myTimeout); }
-//         window.speechSynthesis.speak(utt);
-//     ...
