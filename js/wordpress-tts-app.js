@@ -20,7 +20,6 @@ btn.addEventListener("click", () => {
     btn.className = "tts-button tts-button__on-speak";
     wrapper.className = "tts-wrapper tts-wrapper__on-speak";
   } else {
-    console.log("deveria ter cancelado");
     btn.className = "tts-button";
     wrapper.className = "tts-wrapper";
     speechUtteranceChunker.cancel = true;
@@ -72,6 +71,8 @@ var speechUtteranceChunker = function (utt, settings, callback) {
       if (callback !== undefined) {
         callback();
       }
+      btn.className = "tts-button";
+      wrapper.className = "tts-wrapper";
       return;
     }
     var chunk = chunkArr[0];
